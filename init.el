@@ -62,7 +62,7 @@
  '(custom-safe-themes
    '("7b8f5bbdc7c316ee62f271acf6bcd0e0b8a272fdffe908f8c920b0ba34871d98" default))
  '(package-selected-packages
-   '(doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
+   '(which-key rainbow-delimiters doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -70,7 +70,16 @@
  ;; If there is more than one, they won't work right.
  )
 
+;; Which key.
+(use-package which-key
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0.3))
+
 ;; Programming languages.
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
 (use-package go-mode
   :ensure t)
 
@@ -80,6 +89,7 @@
 ;; Disable line numbers for some modes.
 (dolist (mode '(org-mode-hook
 		term-mode-hook
+		shell-mode-hook
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
