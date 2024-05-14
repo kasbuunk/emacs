@@ -41,9 +41,8 @@
   :config
   (ivy-mode 1))
 
-(use-package swiper :ensure t)
+(use-package swiper)
 (use-package counsel
-  :ensure t
   :bind (("M-x" . counsel-M-x)
 	 ("C-x b" . counsel-ibuffer)
 	 ("C-x C-f" . counsel-find-file)
@@ -54,7 +53,6 @@
 
 ;; Modeline.
 (use-package doom-modeline
-  :ensure t
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
@@ -70,7 +68,7 @@
  '(custom-safe-themes
    '("7b8f5bbdc7c316ee62f271acf6bcd0e0b8a272fdffe908f8c920b0ba34871d98" default))
  '(package-selected-packages
-   '(ivy-rich which-key rainbow-delimiters doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
+   '(helpful ivy-rich which-key rainbow-delimiters doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -88,8 +86,7 @@
 ;; Programming languages.
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
-(use-package go-mode
-  :ensure t)
+(use-package go-mode)
 
 ;; Enable line numbers.
 (column-number-mode)
@@ -104,6 +101,16 @@
 (use-package ivy-rich
   :init
   (ivy-rich-mode 1))
+
+(use-package helpful
+  :custom
+  (counsel-describe-function-function #'helpful-callable)
+  (counsel-describe-variable-function #'helpful-variable)
+  :bind
+  ([remap describe-function] . counsel-describe-function)
+  ([remap describe-command] . helpful-command)
+  ([remap describe-variable] . counsel-describe-variable)
+  ([remap describe-key] . helpful-key))
 
 ;;; UNDO
 ;; Vim style undo not needed for emacs 28
