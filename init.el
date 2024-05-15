@@ -51,15 +51,22 @@
   :config
   (setq ivy-initial-inputs-alist nil))
 
+;; Icons.
+;; The first time this is run on a new machine, run the following command:
+;;
+;; M-x all-the-icons-install-fonts
+(use-package all-the-icons)
+
 ;; Modeline.
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :custom ((doom-modeline-height 15)))
 
 ;; Theme.
+(use-package doom-themes)
 (use-package gruvbox-theme
   :config
-  (load-theme 'gruvbox))
+  (load-theme 'gruvbox t))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
