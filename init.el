@@ -75,7 +75,7 @@
  '(custom-safe-themes
    '("7b8f5bbdc7c316ee62f271acf6bcd0e0b8a272fdffe908f8c920b0ba34871d98" default))
  '(package-selected-packages
-   '(helpful ivy-rich which-key rainbow-delimiters doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
+   '(magit evil-magit counsel-projectile projectile hydra general all-the-icons peach-melpa doom-themes helpful ivy-rich which-key rainbow-delimiters doom-modeline counsel swiper ivy command-log-mode go-mode vertico undo-fu gruvbox-theme evil-collection)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -119,26 +119,92 @@
   ([remap describe-variable] . counsel-describe-variable)
   ([remap describe-key] . helpful-key))
 
-;;; UNDO
-;; Vim style undo not needed for emacs 28
-;; (use-package undo-fu)
+;; Key bindings.
+(use-package general
+  :config
+  (general-create-definer buunk/leader-keys
+    :keymaps '(normal insert visual emacs)
+    :prefix "SPC"
+    :global-prefix "C-SPC")
+
+  (buunk/leader-keys
+   "t" '(:ignore t :which-key "toggles")
+   "tt" '(counsel-load-theme :which-key "choose theme")))
+
+;; Copied from YouTuber System Crafters, needs revision.
+(defun buunk/evil-hook ()
+  (dolist (mode '(custom-hook
+		  eshell-mode
+		  git-rebase-mode
+		  erc-mode
+		  circe-server-mode
+		  circe-chat-mode
+		  sauron-mode
+		  term-mode))
+    (add-to-list 'evil-emacs-state-modes mode)))
 
 ;;; Vim Bindings
-;; (use-package evil
-;;   :demand t
-;;   :bind (("<escape>" . keyboard-escape-quit))
-;;   :init
-;;   ;; allows for using cgn
-;;   ;; (setq evil-search-module 'evil-search)
-;;   (setq evil-want-keybinding nil)
-;;   ;; no vim insert bindings
-;;   (setq evil-undo-system 'undo-fu)
-;;   :config
-;;   (evil-mode 1))
+(use-package evil
+  :demand t
+  :bind (("<escape>" . keyboard-escape-quit))
+  :init
+  ;; Allows for using cgn
+  ;; (setq evil-search-module 'evil-search)
+  (setq evil-want-integration t)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll t)
+  ;; No vim insert bindings.
+  (setq evil-undo-system 'undo-fu)
+  :hook (evil-mode . buunk/evil-hook)
+  :config
+  (evil-mode 1)
+  (define-key evil-insert-state-map (kbd "C-g") 'evil-normal-state)
+  ;; J and K navigate per visual line if it's wrapped.
+  (evil-global-set-key 'motion "j" 'evil-next-visual-line)
+  (evil-global-set-key 'motion "k" 'evil-previous-visual-line)
+  ;; Start in normal mode.
+  (evil-set-initial-state 'messages-buffer-mode 'normal)
+  (evil-set-initial-state 'dashboard-mode 'normal))
 
-;;; Vim Bindings Everywhere else
-;; (use-package evil-collection
-;;   :after evil
-;;   :config
-;;   (setq evil-want-integration t)
-;;   (evil-collection-init))
+;;; Vim Bindings everywhere else.
+(use-package evil-collection
+  :after evil
+  :config
+  (setq evil-want-integration t)
+  (evil-collection-init))
+
+;;; Hydra
+(use-package hydra)
+
+(defhydra hydra-text-scale (:timeout 4)
+	  "scale text"
+	  ("j" text-scale-increase "in")
+	  ("k" text-scale-decrease "out")
+	  ("f" nil "finished" :exit t))
+
+(buunk/leader-keys
+   "ts" '(hydra-text-scale/body :which-key "scale text"))
+
+(use-package projectile
+  :diminish projectile-mode
+  :config (projectile-mode)
+  :custom ((projectile-completion-system 'ivy))
+  :bind-keymap
+  ("C-c p" . projectile-command-map)
+  :init
+  (when (file-directory-p "~/git/lab.weave.nl/tsg")
+    (setq projectile-project-search-path '("~/git/lab.weave.nl/tsg")))
+  ;;(when (file-directory-p "~/git/github.com/kasbuunk")
+    ;;(setq projectile-project-search-path '("~/git/github.com/kasbuunk")))
+  ;; Show dired when switching projects.
+  (setq projectile-switch-project-action #'projectile-dired))
+
+(use-package counsel-projectile
+  :config (counsel-projectile-mode))
+
+(use-package magit
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+
+(use-package evil-magit
+  :after magit)
