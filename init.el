@@ -192,10 +192,6 @@
   :bind-keymap
   ("C-c p" . projectile-command-map)
   :init
-  (when (file-directory-p "~/git/lab.weave.nl/tsg")
-    (setq projectile-project-search-path '("~/git/lab.weave.nl/tsg")))
-  ;;(when (file-directory-p "~/git/github.com/kasbuunk")
-    ;;(setq projectile-project-search-path '("~/git/github.com/kasbuunk")))
   ;; Show dired when switching projects.
   (setq projectile-switch-project-action #'projectile-dired))
 
